@@ -1,8 +1,8 @@
-const APP_ID="2e62b80501f44eb9b1e95249732004b9"
-const TOKEN ="007eJxTYCi4zB5X0Ck5/fg3819Ose5v9jE2/3E+GyJ8oKZO/8DULacVGIxSzYySLAxMDQzTTExSkyyTDFMtTY1MLM2NjQwMTJIsL9rwpDUEMjIoMXxiZWSAQBCfhSE3MTOPgQEAUlEeqg=="
-const CHANNEL ="main"
+const APP_ID = "2e62b80501f44eb9b1e95249732004b9"
+const TOKEN = "007eJxTYPih/oB1/RGDoCrfjdEf1n7df/207MNVcZ5Ldjfz+r6b97tegcEo1cwoycLA1MAwzcQkNckyyTDV0tTIxNLc2MjAwCTJsv2XQVpDICND2f6/zIwMEAjiszDkJmbmMTAAABdMIis="
+const CHANNEL = "main"
 
-const client = AgoraRTC.createClient({mode:'rtc', codec:'vp8'})
+const client = AgoraRTC.createClient({ mode: 'rtc', codec: 'vp8' })
 
 let localTracks = []
 let remoteUsers = {}
@@ -13,12 +13,12 @@ let remoteUsers = {}
 let joinAndDisplayLocalStream = async () => {
 
     client.on('user-published', handleUserJoined)
-    
+
     client.on('user-left', handleUserLeft)
-    
+
     let UID = await client.join(APP_ID, CHANNEL, TOKEN, null)
 
-    localTracks = await AgoraRTC.createMicrophoneAndCameraTracks() 
+    localTracks = await AgoraRTC.createMicrophoneAndCameraTracks()
 
     let player = `<div class="video-container" id="user-container-${UID}">
                         <div class="video-player" id="user-${UID}"></div>
@@ -26,7 +26,7 @@ let joinAndDisplayLocalStream = async () => {
     document.getElementById('video-streams').insertAdjacentHTML('beforeend', player)
 
     localTracks[1].play(`user-${UID}`)
-    
+
     await client.publish([localTracks[0], localTracks[1]])
 }
 
@@ -37,12 +37,12 @@ let joinStream = async () => {
 }
 
 let handleUserJoined = async (user, mediaType) => {
-    remoteUsers[user.uid] = user 
+    remoteUsers[user.uid] = user
     await client.subscribe(user, mediaType)
 
-    if (mediaType === 'video'){
+    if (mediaType === 'video') {
         let player = document.getElementById(`user-container-${user.uid}`)
-        if (player != null){
+        if (player != null) {
             player.remove()
         }
 
@@ -54,7 +54,7 @@ let handleUserJoined = async (user, mediaType) => {
         user.videoTrack.play(`user-${user.uid}`)
     }
 
-    if (mediaType === 'audio'){
+    if (mediaType === 'audio') {
         user.audioTrack.play()
     }
 }
@@ -65,7 +65,7 @@ let handleUserLeft = async (user) => {
 }
 
 let leaveAndRemoveLocalStream = async () => {
-    for(let i = 0; localTracks.length > i; i++){
+    for (let i = 0; localTracks.length > i; i++) {
         localTracks[i].stop()
         localTracks[i].close()
     }
@@ -77,11 +77,11 @@ let leaveAndRemoveLocalStream = async () => {
 }
 
 let toggleMic = async (e) => {
-    if (localTracks[0].muted){
+    if (localTracks[0].muted) {
         await localTracks[0].setMuted(false)
         e.target.innerText = 'Mic on'
         e.target.style.backgroundColor = 'cadetblue'
-    }else{
+    } else {
         await localTracks[0].setMuted(true)
         e.target.innerText = 'Mic off'
         e.target.style.backgroundColor = '#EE4B2B'
@@ -89,11 +89,11 @@ let toggleMic = async (e) => {
 }
 
 let toggleCamera = async (e) => {
-    if(localTracks[1].muted){
+    if (localTracks[1].muted) {
         await localTracks[1].setMuted(false)
         e.target.innerText = 'Camera on'
         e.target.style.backgroundColor = 'cadetblue'
-    }else{
+    } else {
         await localTracks[1].setMuted(true)
         e.target.innerText = 'Camera off'
         e.target.style.backgroundColor = '#EE4B2B'
